@@ -1,0 +1,145 @@
+sharding:
+  jdbc:
+    datasource:
+      names: db-login-0,db-login-salve-1,db-login-salve-2
+      db-login-0: #主库一
+        type: com.alibaba.druid.pool.DruidDataSource #数据源包
+        driverClassName: oracle.jdbc.OracleDriver
+        url: jdbc:oracle:thin:@127.0.0.1:1521/hjc
+        username: sys as sysdba
+        password: Ble654321
+        maxPoolSize: 41
+      db-login-salve-1: #db-login-0 的从库一
+        type: com.alibaba.druid.pool.DruidDataSource #数据源包
+        driverClassName: oracle.jdbc.OracleDriver
+        url: jdbc:oracle:thin:@127.0.0.1:1521/hjc
+        username: sys as sysdba
+        password: Ble654321
+        maxPoolSize: 41
+      db-login-salve-2: #db-login-0 的从库二
+        type: com.alibaba.druid.pool.DruidDataSource #数据源包
+        driverClassName: oracle.jdbc.OracleDriver
+        url: jdbc:oracle:thin:@127.0.0.1:1521/hjc
+        username: sys as sysdba
+        password: Ble654321
+        maxPoolSize: 41
+    config:
+      props:
+        sql: # 开启SQL显示，默认值: false，注意：仅配置读写分离时不会打印日志！！！
+          show: true
+      sharding:
+        master-slave-rules:
+          ds0:
+            master-data-source-name: db-login-0
+            slave-data-source-names: db-login-salve-1,db-login-salve-2
+        default-database-strategy:
+          inline:
+            sharding-column: user_id
+            algorithm-expression: ds$->{user_id % 1}
+        default-table-strategy:
+          inline:
+            sharding-column: user_id
+            algorithm-expression: ds$->{user_id % 2}
+        default-key-generator-class-name: com.hjc.utils.HJCKeyGenerator
+        binding-tables: hjc_user
+        broadcast-tables: undo_log
+        tables:
+          hjc_user:
+            actual-data-nodes: ds$->{0}.hjc_user_$->{0..1}
+            table-strategy:
+              inline:
+                sharding-column: user_id
+                algorithm-expression: hjc_user_$->{user_id % 2}
+            key-generator-column-name: user_id
+            key-generator-class-name: com.hjc.utils.HJCKeyGenerator
+          undo_log:
+            actual-data-nodes: ds$->{0}.undo_log
+            key-generator-column-name: id
+            key-generator-class-name: com.hjc.utils.HJCKeyGenerator
+spring:
+  session:
+    store-type: redis
+    redis:
+      flush-mode: on_save
+      namespace: spring:session
+  redis:
+    password: Ble654321
+    timeout: 6000ms
+    jedis:
+      pool:
+        min-idle: 0 #最小连接数
+        max-active: 19
+        max-idle: 19
+        max-wait: 6000ms
+    lettuce:
+      pool:
+        min-idle: 0 #最小连接数
+        max-active: 19
+        max-idle: 19
+        max-wait: 6000ms
+    cluster:
+      nodes: 10.0.0.42:7301,10.0.0.16:7301,10.0.0.16:7401,10.0.0.16:7302,10.0.0.42:7302,10.0.0.42:7401
+  cloud:
+    nacos:
+      enabled: true
+      config:
+        server-addr: 10.0.0.35:8848
+    sentinel:
+      transport:
+        dashboard: localhost:18080 #熔断管理地址
+  dubbo:
+    application:
+      name: login-provider #登录系统生产者应用名
+    registry:
+      address: nacos://10.0.0.35:8848 #nacos地址
+      version: 1.0.0
+    protocol:
+      name: dubbo #dubbo协议
+      port: 7180 #duboo端口号
+    scan: com.hjc
+  boot:
+    admin:
+      client:
+        url: http://10.0.0.16:9090/hjcadmin
+        username: hjc718
+        password: Ble654321
+        instance:
+          service-base-url: http://10.0.0.16:8080/
+server:
+  servlet:
+    session:
+      timeout: 30m
+hjc:
+  domain: hjc718.com
+  redis:
+    host: 10.0.0.50
+    port: 22121
+    password: Ble654321
+    timeout: 6000
+    local-time: 1000 #本地缓存有效时间 , 毫秒
+    task-queue-check-time: 5000 #消息队列处理类检查时间 5 秒钟检查一次
+    jedis:
+      pool:
+        min-idle: 2 #最小连接数
+        max-active: 100
+        max-idle: 40
+        max-wait: 60000
+      value-len: 10 #redis每次循环获取值的个数
+rocketmq:
+  name-server: http://1774705571265365.mqrest.cn-shenzhen.aliyuncs.com #hjc 阿里云接入点
+  consumer:
+    group: GID-SIGN-GROUP #消费者组
+    access-key: LTAI4FjMRW4whHXeu6HjySNt
+    secret-key: ZlNPT8IFUOKMYU9dbhyKgn2lCbWeOh
+  producer:
+    group: GID-SIGN-GROUP #生产者组
+    access-key: LTAI4FjMRW4whHXeu6HjySNt
+    secret-key: ZlNPT8IFUOKMYU9dbhyKgn2lCbWeOh
+    send-message-timeout: 3000000
+    compress-message-body-threshold: 4096
+    max-message-size: 4194304
+    retry-times-when-send-async-failed: 4
+    retry-next-server: true
+    retry-times-when-send-failed: 4
+login:
+  default-redirect-url: http://www.hjc718.com:3000/

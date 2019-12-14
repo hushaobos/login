@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hjc.sign.dao.SignTokenDao">
+	<!--	SignToken类集合	-->
+	<resultMap id="signTokenMap" type="com.hjc.sign.vo.SignTokenVo">
+		<id column="s_tokenid" property="sTokenid"></id>
+		<result column="user_id" property="userId"></result>
+		<result column="sc_access_token" property="scAccessToken"></result>
+		<result column="access_token_create_time" property="accessTokenCreateTime"></result>
+		<result column="refesh_token_create_time" property="refeshTokenCreateTime"></result>
+		<result column="refresh_token_expired_time" property="refreshTokenExpiredTime"></result>
+		<result column="refesh_token" property="refeshToken"></result>
+		<result column="access_token_expired_time" property="accessTokenExpiredTime"></result>
+	</resultMap>
+
+	<!--	SignToken列表查询字段		-->
+	<sql id="signTokenListSql_0">
+		s_tokenid,
+		user_id,
+		sc_access_token,
+		access_token_create_time,
+		refesh_token_create_time,
+		refresh_token_expired_time,
+		refesh_token,
+		access_token_expired_time
+	</sql>
+
+	<!--	SignToken查询字段		-->
+	<sql id="signTokenSql_0">
+		s_tokenid,
+		user_id,
+		sc_access_token,
+		access_token_create_time,
+		refesh_token_create_time,
+		refresh_token_expired_time,
+		refesh_token,
+		access_token_expired_time
+	</sql>
+
+	<!--	SignToken列表查询		-->
+	<select id="querySignTokenList" resultMap="signTokenMap" parameterType="com.hjc.sign.dto.query.SignTokenQuery">
+		SELECT
+        <if test="flag == 0">
+            <include refid="signTokenListSql_0"></include>
+        </if>
+		FROM hjc_sign_token
+		<where>
+			<if test="sign.sTokenid != null">
+				s_tokenid = #{sign.sTokenid}
+			</if>
+		</where>
+	</select>
+
+	<!--	通过Id查询SignToken		-->
+	<select id="querySignTokenById" resultMap="signTokenMap" parameterType="com.hjc.sign.dto.query.SignTokenQuery">
+		SELECT
+        <if test="flag == 0">
+            <include refid="signTokenSql_0"></include>
+        </if>
+		FROM hjc_sign_token
+		where s_tokenid = #{sign.sTokenid}
+	</select>
+
+	<!--	新增SignToken数据		-->
+	<insert id="addSignToken"  parameterType="com.hjc.sign.dto.valid.SignTokenValidDto">
+		insert into 
+		hjc_sign_token(
+		user_id,
+		sc_access_token,
+		access_token_create_time,
+		refesh_token_create_time,
+		refresh_token_expired_time,
+		refesh_token,
+		access_token_expired_time
+		)
+		values(
+		#{userId},
+		#{scAccessToken},
+		#{accessTokenCreateTime},
+		#{refeshTokenCreateTime},
+		#{refreshTokenExpiredTime},
+		#{refeshToken},
+		#{accessTokenExpiredTime}
+		)
+	</insert>
+
+	<!--	修改SignToken数据		-->
+	<update id="updateSignToken" parameterType="com.hjc.sign.dto.valid.SignTokenValidDto">
+		update hjc_sign_token
+		<set>
+			<if test="userId != null">
+				user_id = #{userId},
+			</if>
+			<if test="scAccessToken != null">
+				sc_access_token = #{scAccessToken},
+			</if>
+			<if test="accessTokenCreateTime != null">
+				access_token_create_time = #{accessTokenCreateTime},
+			</if>
+			<if test="refeshTokenCreateTime != null">
+				refesh_token_create_time = #{refeshTokenCreateTime},
+			</if>
+			<if test="refreshTokenExpiredTime != null">
+				refresh_token_expired_time = #{refreshTokenExpiredTime},
+			</if>
+			<if test="refeshToken != null">
+				refesh_token = #{refeshToken},
+			</if>
+			<if test="accessTokenExpiredTime != null">
+				access_token_expired_time = #{accessTokenExpiredTime},
+			</if>
+		</set>
+		where s_tokenid = #{sTokenid}
+	</update>
+
+	<!--	删除SignToken数据		-->
+	<delete id="deleteSignToken" parameterType="java.lang.Long">
+		delete from hjc_sign_token
+		where s_tokenid = #{sTokenid}
+	</delete>
+
+</mapper>

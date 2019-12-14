@@ -1,0 +1,208 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hjc.user.dao.UserDao">
+	<!--	User类集合	-->
+	<resultMap id="userMap" type="com.hjc.user.vo.UserVo">
+		<id column="user_id" property="userId"></id>
+		<result column="name" property="name"></result>
+		<result column="register" property="register"></result>
+		<result column="nick_name" property="nickName"></result>
+		<result column="residence" property="residence"></result>
+		<result column="area_code" property="areaCode"></result>
+		<result column="account" property="account"></result>
+		<result column="state" property="state"></result>
+		<result column="salt" property="salt"></result>
+		<result column="role" property="role"></result>
+		<result column="email" property="email"></result>
+		<result column="password" property="password"></result>
+		<result column="sex" property="sex"></result>
+		<result column="avatar" property="avatar"></result>
+		<result column="phone" property="phone"></result>
+		<result column="identity_card" property="identityCard"></result>
+	</resultMap>
+
+	<!--	User列表查询字段		-->
+	<sql id="userListSql_0">
+		user_id,
+		name,
+		register,
+		nick_name,
+		residence,
+		area_code,
+		account,
+		state,
+		salt,
+		role,
+		email,
+		password,
+		sex,
+		avatar,
+		phone,
+		identity_card
+	</sql>
+
+	<!--	User查询字段		-->
+	<sql id="userSql_0">
+		user_id,
+		name,
+		register,
+		nick_name,
+		residence,
+		area_code,
+		account,
+		state,
+		salt,
+		role,
+		email,
+		password,
+		sex,
+		avatar,
+		phone,
+		identity_card
+	</sql>
+
+	<!--	User查询账号密码字段		-->
+	<sql id="userSql_1">
+		user_id,
+		account,
+		salt,
+		role,
+		password
+	</sql>
+
+	<!--	User列表查询		-->
+	<select id="queryUserList" resultMap="userMap" parameterType="com.hjc.user.dto.query.UserQuery">
+		SELECT
+        <if test="flag == 0">
+            <include refid="userListSql_0"></include>
+        </if>
+		FROM hjc_user
+		<where>
+			<if test="user.userId != null">
+				user_id = #{user.userId}
+			</if>
+			<if test="user.account != null">
+				account = #{user.account}
+			</if>
+		</where>
+	</select>
+
+	<!--	通过Id查询User		-->
+	<select id="queryUserById" resultMap="userMap" parameterType="com.hjc.user.dto.query.UserQuery">
+		SELECT
+        <if test="flag == 0">
+            <include refid="userSql_0"></include>
+        </if>
+		<if test="flag == 1">
+			<include refid="userSql_1"></include>
+		</if>
+		FROM hjc_user
+		<where>
+			<if test="user.userId != null">
+				user_id = #{user.userId}
+			</if>
+			<if test="user.account != null">
+				account = #{user.account}
+			</if>
+		</where>
+	</select>
+
+	<!--	新增User数据		-->
+	<insert id="addUser"  parameterType="com.hjc.user.dto.valid.UserValidDto">
+		insert into 
+		hjc_user(
+		name,
+		register,
+		nick_name,
+		residence,
+		area_code,
+		account,
+		state,
+		salt,
+		role,
+		email,
+		password,
+		sex,
+		avatar,
+		phone,
+		identity_card
+		)
+		values(
+		#{name},
+		#{register},
+		#{nickName},
+		#{residence},
+		#{areaCode},
+		#{account},
+		#{state},
+		#{salt},
+		#{role},
+		#{email},
+		#{password},
+		#{sex},
+		#{avatar},
+		#{phone},
+		#{identityCard}
+		)
+	</insert>
+
+	<!--	修改User数据		-->
+	<update id="updateUser" parameterType="com.hjc.user.dto.valid.UserValidDto">
+		update hjc_user
+		<set>
+			<if test="name != null">
+				name = #{name},
+			</if>
+			<if test="register != null">
+				register = #{register},
+			</if>
+			<if test="nickName != null">
+				nick_name = #{nickName},
+			</if>
+			<if test="residence != null">
+				residence = #{residence},
+			</if>
+			<if test="areaCode != null">
+				area_code = #{areaCode},
+			</if>
+			<if test="account != null">
+				account = #{account},
+			</if>
+			<if test="state != null">
+				state = #{state},
+			</if>
+			<if test="salt != null">
+				salt = #{salt},
+			</if>
+			<if test="role != null">
+				role = #{role},
+			</if>
+			<if test="email != null">
+				email = #{email},
+			</if>
+			<if test="password != null">
+				password = #{password},
+			</if>
+			<if test="sex != null">
+				sex = #{sex},
+			</if>
+			<if test="avatar != null">
+				avatar = #{avatar},
+			</if>
+			<if test="phone != null">
+				phone = #{phone},
+			</if>
+			<if test="identityCard != null">
+				identity_card = #{identityCard},
+			</if>
+		</set>
+		where user_id = #{userId}
+	</update>
+
+	<!--	删除User数据		-->
+	<delete id="deleteUser" parameterType="java.lang.Long">
+		delete from hjc_user
+		where user_id = #{userId}
+	</delete>
+
+</mapper>

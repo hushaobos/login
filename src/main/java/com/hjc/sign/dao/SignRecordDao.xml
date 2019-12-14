@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hjc.sign.dao.SignRecordDao">
+	<!--	SignRecord类集合	-->
+	<resultMap id="signRecordMap" type="com.hjc.sign.vo.SignRecordVo">
+		<id column="srecord_id" property="srecordId"></id>
+		<result column="sign_terminal" property="signTerminal"></result>
+		<result column="sign_time" property="signTime"></result>
+		<result column="sign_ip" property="signIp"></result>
+		<result column="sc_access_token" property="scAccessToken"></result>
+		<result column="user_id" property="userId"></result>
+		<result column="s_tokenid" property="sTokenid"></result>
+		<result column="sign_area" property="signArea"></result>
+	</resultMap>
+
+	<!--	SignRecord列表查询字段		-->
+	<sql id="signRecordListSql_0">
+		srecord_id,
+		sign_terminal,
+		sign_time,
+		sign_ip,
+		sc_access_token,
+		user_id,
+		s_tokenid,
+		sign_area
+	</sql>
+
+	<!--	SignRecord查询字段		-->
+	<sql id="signRecordSql_0">
+		srecord_id,
+		sign_terminal,
+		sign_time,
+		sign_ip,
+		sc_access_token,
+		user_id,
+		s_tokenid,
+		sign_area
+	</sql>
+
+	<!--	SignRecord列表查询		-->
+	<select id="querySignRecordList" resultMap="signRecordMap" parameterType="com.hjc.sign.dto.query.SignRecordQuery">
+		SELECT
+        <if test="flag == 0">
+            <include refid="signRecordListSql_0"></include>
+        </if>
+		FROM hjc_sign_record
+		<where>
+			<if test="sign.srecordId != null">
+				srecord_id = #{sign.srecordId}
+			</if>
+		</where>
+	</select>
+
+	<!--	通过Id查询SignRecord		-->
+	<select id="querySignRecordById" resultMap="signRecordMap" parameterType="com.hjc.sign.dto.query.SignRecordQuery">
+		SELECT
+        <if test="flag == 0">
+            <include refid="signRecordSql_0"></include>
+        </if>
+		FROM hjc_sign_record
+		where srecord_id = #{sign.srecordId}
+	</select>
+
+	<!--	新增SignRecord数据		-->
+	<insert id="addSignRecord"  parameterType="com.hjc.sign.dto.valid.SignRecordValidDto">
+		insert into 
+		hjc_sign_record(
+		sign_terminal,
+		sign_time,
+		sign_ip,
+		sc_access_token,
+		user_id,
+		s_tokenid,
+		sign_area
+		)
+		values(
+		#{signTerminal},
+		#{signTime},
+		#{signIp},
+		#{scAccessToken},
+		#{userId},
+		#{sTokenid},
+		#{signArea}
+		)
+	</insert>
+
+	<!--	修改SignRecord数据		-->
+	<update id="updateSignRecord" parameterType="com.hjc.sign.dto.valid.SignRecordValidDto">
+		update hjc_sign_record
+		<set>
+			<if test="signTerminal != null">
+				sign_terminal = #{signTerminal},
+			</if>
+			<if test="signTime != null">
+				sign_time = #{signTime},
+			</if>
+			<if test="signIp != null">
+				sign_ip = #{signIp},
+			</if>
+			<if test="scAccessToken != null">
+				sc_access_token = #{scAccessToken},
+			</if>
+			<if test="userId != null">
+				user_id = #{userId},
+			</if>
+			<if test="sTokenid != null">
+				s_tokenid = #{sTokenid},
+			</if>
+			<if test="signArea != null">
+				sign_area = #{signArea},
+			</if>
+		</set>
+		where srecord_id = #{srecordId}
+	</update>
+
+	<!--	删除SignRecord数据		-->
+	<delete id="deleteSignRecord" parameterType="java.lang.Long">
+		delete from hjc_sign_record
+		where srecord_id = #{srecordId}
+	</delete>
+
+</mapper>
